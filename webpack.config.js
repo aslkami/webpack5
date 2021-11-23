@@ -7,9 +7,16 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
+const glob = require("glob");
+const PurgecssPlugin = require("purgecss-webpack-plugin");
+
+const PATHS = {
+  src: path.join(__dirname, "src"),
+};
 
 module.exports = {
   mode: "development", // 如果命令行用了 --mode=production 以 命令行的为准
+  // devtool: false,
   entry: "./src/index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -91,6 +98,7 @@ module.exports = {
                 "@babel/preset-env",
                 {
                   useBuiltIns: false,
+                  modules: false,
                 },
               ],
               "@babel/preset-react",
@@ -183,6 +191,9 @@ module.exports = {
           to: path.resolve(__dirname, "dist/public"), //目标地址，相对于output的path目录
         },
       ],
+    }),
+    new PurgecssPlugin({
+      paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
     }),
   ],
 };
